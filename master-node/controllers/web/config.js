@@ -36,8 +36,7 @@ $(function () {
       $(`#${room}-connection`).addClass('badge-danger');
     })
   });
-  socket.on('worker-connection', function(data){
-    var connected = data.status === 'connected' ? 'green' : 'red';
+  socket.on('worker-connection', function(data) {
     if (data.status === 'connected') {
       $(`#${data.room}-connection`).removeClass('badge-danger');
       $(`#${data.room}-connection`).addClass('badge-success');
@@ -52,7 +51,7 @@ $(function () {
       type: "POST",
       url: `/temp`,
       contentType: 'application/json',
-      data: JSON.stringify({room, direction}),
+      data: JSON.stringify({room, direction, id_token}),
       success: function (data) {
         $(`#${room}-desired`).html(JSON.parse(data).desiredTemp);
       },

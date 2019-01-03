@@ -80,6 +80,7 @@ app.get('/login.js', function(req, res) {
 });
 
 app.post('/challenge', function(req, res) {
+	console.log('challenge from worker node')
   if (req.body.code === config.challengeToken) {
     res.status(200).json({result: 'success'})
   } else {
@@ -92,19 +93,40 @@ app.post('/temp', function (req, res) {
 	if (roomTempListener === null) {
 		return res.status(500).json({error: 'Master node not initialized yet, please try again.'})
 	}
-	if (!req.body || !req.body.room || !req.body.direction) {
-		return res.status(500).json({error: 'Send "room" and temperatur "direction" in json body'})
+	if (!req.body || !req.body.id_token) {
+		return res.status(401).json({error: 'Not authorized.'})
 	}
-	const room = req.body.room;
-	const direction = req.body.direction;
-
-	roomTempListener({room, direction}, (error, data) => {
-		if (error) {
-			res.status(500).json({error: `An error occurred: ${error}`})
+	verify(req.body.id_token).then(response => {
+		const authorizedUsers = config.authorizedUsers;
+		var userOk;
+		authorizedUsers.forEach(user => {
+			if (user === response) {
+				userOk = true;
+				return;
+			}
+		})
+		if (!userOk) {
+      return new Error()
 		} else {
-			res.status(200).send(data)
+			if (!req.body || !req.body.room || !req.body.direction) {
+				return res.status(500).json({error: 'Send "room" and temperature "direction" in json body'})
+			}
+			const room = req.body.room;
+			const direction = req.body.direction;
+
+			roomTempListener({room, direction}, (error, data) => {
+				if (error) {
+					res.status(500).json({error: `An error occurred: ${error}`})
+				} else {
+					res.status(200).send(data)
+				}
+			})
 		}
+	}).catch(err => {
+		// console.log(err)
+		res.status(401).json({error: 'Not authorized'})
 	})
+
 });
 
 leadershipNamespace.on('connect', function (socket) {
