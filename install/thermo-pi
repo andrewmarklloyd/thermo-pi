@@ -1,0 +1,38 @@
+#!/bin/bash
+
+CONFIG_DIR=/srv/thermo-pi/
+INIT_FILE=${CONFIG_DIR}initialized.json
+SYSTEM_UNAME=$(uname)
+if [[ ${SYSTEM_UNAME} == 'Darwin' ]]; then
+  APP_FILE=${thermo_pi}/worker-node
+  initCommand="npm run init --prefix ${APP_FILE}"
+  startCommand="npm start --prefix ${APP_FILE}"
+elif [[ ${SYSTEM_UNAME} == 'Linux' ]]; then
+  APP_FILE=/home/pi/thermo-pi/worker-node
+  initCommand="npm run init --prefix ${APP_FILE}"
+  startCommand="npm start --prefix ${APP_FILE}"
+else
+  echo 'System uname not recognized. Expecting Darwin or Linux'
+  exit 1
+fi
+
+if [[ ! -f ${INIT_FILE} ]]; then
+  echo 'thermo-pi not initialized, beginning initialization server'
+  eval ${initCommand}
+else
+  echo 'thermo-pi already initialized, beginning worker node'
+  eval ${startCommand}
+fi
+
+# appInitialized=$(node -e "console.log(require('${INIT_FILE}').value)")
+#
+# if [[ ${appInitialized} == 'true' ]]; then
+#   echo 'thermo-pi already initialized, beginning worker node'
+#   eval ${startCommand}
+# elif [[ ${appInitialized} == 'false' ]]; then
+#   echo 'thermo-pi not initialized, beginning initialization server'
+#   eval ${initCommand}
+# else
+#   echo "Initialization configuration unknown. Check ${INIT_FILE}"
+#   exit 1
+# fi

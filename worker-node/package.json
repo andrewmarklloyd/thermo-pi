@@ -1,0 +1,26 @@
+{
+  "name": "worker-node",
+  "license": "ISC",
+  "version": "1.0.0",
+  "description": "",
+  "main": "systemController.js",
+  "dependencies": {
+    "colors": "^1.3.3",
+    "express": "^4.16.4",
+    "local-devices": "^1.1.1",
+    "request": "^2.88.0",
+    "rpio": "^1.0.11",
+    "socket.io": "^2.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.7"
+  },
+  "scripts": {
+    "init": "node systemController.js --initialize",
+    "start": "node systemController.js",
+    "dev": "nodemon systemController.js",
+    "build": "docker build -t andrewlloyd/thermo-pi-worker .",
+    "install.prod": "npm install --no-save --only=prod"
+  },
+  "author": ""
+}

@@ -1,0 +1,108 @@
+<html>
+
+<head>
+  <title>Thermo-Pi</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <link href='https://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+
+      <div class="col-xl-8 offset-xl-2 py-5">
+
+        <h1>Thermo-Pi</h1>
+
+        <p class="lead">Control your Thermo-Pi here.</p>
+        Master controller: <span id="master-connection" class="badge badge-pill badge-danger">Status</span>
+        <form id="config-form" method="post" role="form">
+
+          <div class="messages"></div>
+
+          <div class="controls">
+            <div class="row">
+              <div class="col-md-4">
+                <h2>Kitchen</h2>
+                <div class="row">
+                  <input id="kitchen-up" type="button" class="btn btn-info btn-send" value="Up">
+                </div>
+                <div class="row">
+                  <input id="kitchen-down" type="button" class="btn btn-info btn-send" value="Down">
+                </div>
+                <div class="row">
+                  Desired temp: <span id="kitchen-desired">unknown</span>
+                </div>
+                <div class="row">
+                  Current temp: <span id="kitchen-current">unknown</span>
+                </div>
+                <div class="row">
+                  <span id="kitchen-connection" class="badge badge-pill badge-danger">Status</span>
+                </div>
+
+              </div>
+              <div class="col-md-4">
+                <h2>Laundry</h2>
+                <div class="row">
+                  <input id="laundry-up" type="button" class="btn btn-info btn-send" value="Up">
+                </div>
+                <div class="row">
+                  <input id="laundry-down" type="button" class="btn btn-info btn-send" value="Down">
+                </div>
+                <div class="row">
+                  Desired temp: <span id="laundry-desired">unknown</span>
+                </div>
+                <div class="row">
+                  Current temp: <span id="laundry-current">unknown</span>
+                </div>
+                <div class="row">
+                  <span id="laundry-connection" class="badge badge-pill badge-danger">Status</span>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <h2>Living Room</h2>
+                <div class="row">
+                  <input id="living-up" type="button" class="btn btn-info btn-send" value="Up">
+                </div>
+                <div class="row">
+                  <input id="living-down" type="button" class="btn btn-info btn-send" value="Down">
+                </div>
+                <div class="row">
+                  Desired temp: <span id="living-desired">unknown</span>
+                </div>
+                <div class="row">
+                  Current temp: <span id="living-current">unknown</span>
+                </div>
+                <div class="row">
+                  <span id="living-connection" class="badge badge-pill badge-danger">Status</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              </div>
+            </div>
+
+          </form>
+
+        </div>
+        <!-- /.8 -->
+
+      </div>
+      <!-- /.row-->
+
+    </div>
+    <!-- /.container-->
+    <iframe id="temp-chart" width="90%" height="90%" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQZytz2rHOlG7AlcCUb6Jjs69ns17uBscV1IW1wCyPy4ZLgas27NqL-FsYxLbOz8piyHGxYxDQkwT5N/pubhtml?gid=1107876374&amp;single=true&amp;widget=true&amp;headers=false"></iframe>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js" integrity="sha256-dHf/YjH1A4tewEsKUSmNnV05DDbfGN3g7NMq86xgGh8=" crossorigin="anonymous"></script>
+    <script src="config.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+  </body>
+
+  </html>
