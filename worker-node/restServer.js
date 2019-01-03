@@ -35,7 +35,7 @@ app.post('/control', function(req, res) {
 });
 
 app.post('/challenge', function(req, res) {
-  if (req.body.code === '12345') {
+  if (req.body.code === process.env.CHALLENGE_TOKEN) {
     res.status(200).json({result: 'success'})
   } else {
     res.status(500).json({result: 'fail'})

@@ -200,7 +200,7 @@ function isMasterNode(node) {
     method: 'POST',
     timeout: 2000,
     body: JSON.stringify({
-			code: '12345'
+			code: process.env.CHALLENGE_TOKEN
     })
 	}
 	return new Promise((resolve, reject) => {
@@ -228,7 +228,7 @@ function isWorkerNode(node) {
     method: 'POST',
     timeout: 2000,
     body: JSON.stringify({
-			code: '12345'
+			code: process.env.CHALLENGE_TOKEN
     })
 	}
 	return new Promise((resolve, reject) => {

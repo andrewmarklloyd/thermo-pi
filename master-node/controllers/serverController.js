@@ -15,7 +15,6 @@ const registerListeners = [];
 var roomTempListener = null;
 const TwoWayMap = require('../helpers/TwoWayMap')
 var socketClientsTwoWayMap = new TwoWayMap();
-const socketClients = {};
 
 const leadershipNamespace = io.of('/leadership');
 const clientUpdatesNamespace = io.of('/updates.client');
@@ -23,8 +22,8 @@ const workerUpdatesNamespace = io.of('/updates.worker')
 
 async function verify(token) {
 	const ticket = await client.verifyIdToken({
-      idToken: token,
-      audience: config.google.client.id,
+    idToken: token,
+    audience: config.google.client.id,
   });
   const payload = ticket.getPayload();
   const userid = payload['sub'];
@@ -72,7 +71,7 @@ app.get('/', requireLogin, function (req, res) {
 	res.sendFile(`${__dirname}/web/index.html`);
 });
 
-app.get('/config.js', function(req, res) {
+app.get('/config.js', requireLogin, function(req, res) {
   res.sendFile(`${__dirname}/web/config.js`);
 });
 
@@ -81,7 +80,7 @@ app.get('/login.js', function(req, res) {
 });
 
 app.post('/challenge', function(req, res) {
-  if (req.body.code === '12345') {
+  if (req.body.code === config.challengeToken) {
     res.status(200).json({result: 'success'})
   } else {
     res.status(500).json({result: 'fail'})
@@ -89,6 +88,7 @@ app.post('/challenge', function(req, res) {
 })
 
 app.post('/temp', function (req, res) {
+	//TODO authorize this post
 	if (roomTempListener === null) {
 		return res.status(500).json({error: 'Master node not initialized yet, please try again.'})
 	}
