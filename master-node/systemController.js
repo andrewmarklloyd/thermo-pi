@@ -1,9 +1,6 @@
 const config = require('./config/config')
 
 function initialize() {
-	// const TouchOSCController = require('./controllers/touchOscController.js');
-	// const touchOscController = new TouchOSCController();
-
 	const WorkerNodeInterface = require('./controllers/workerNodeInterface.js');
 	const workerNodeInterface = new WorkerNodeInterface();
 
@@ -18,10 +15,6 @@ function initialize() {
 	serverController.setRoomTempListener((roomTemp, callback) => {
 		workerNodeInterface.setRoomTemp(roomTemp, callback);
 	})
-
-	// touchOscController.setHeaterListener((roomStatus, callback) => {
-	// 	workerNodeInterface.setHeaterStatus(roomStatus, callback);
-	// })
 }
 
 

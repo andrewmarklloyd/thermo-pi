@@ -8,11 +8,7 @@ const envVarsSchema = Joi.object({
   NODE_ENV: Joi.string()
     .allow(['development', 'production'])
     .default('development'),
-  OSC_MODE: Joi.string()
-    .allow(['true', 'false'])
-    .default('false'),
-  OSC_SERVER_PORT: Joi.number()
-    .default(3000)
+
 }).unknown()
   .required();
 
@@ -25,11 +21,7 @@ if (error) {
 }
 
 const config = {
-  env: envVars.NODE_ENV,
-  osc: {
-    enabled: envVars.OSC_MODE == 'true' ? true : false,
-    port: envVars.OSC_SERVER_PORT
-  }
+  env: envVars.NODE_ENV
 };
 
 module.exports = config;
