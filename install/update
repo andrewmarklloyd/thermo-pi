@@ -17,7 +17,7 @@ else
   cd ../worker-node
   npm run install.prod
   git checkout -- .
-  ./kill-processes.sh
+  ../install/kill-processes.sh
   echo 'Starting worker node process...'
   nohup npm start &
 fi
