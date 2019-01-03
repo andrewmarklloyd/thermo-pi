@@ -8,7 +8,10 @@ const envVarsSchema = Joi.object({
   NODE_ENV: Joi.string()
     .allow(['development', 'production'])
     .default('development'),
-
+  GOOGLE_CLIENT_ID: Joi.string().required(),
+  GOOGLE_CLIENT_SECRET: Joi.string().required(),
+  GOOGLE_SHEET_ID: Joi.string().required(),
+  AUTHORIZED_USERS: Joi.string().required()
 }).unknown()
   .required();
 
@@ -21,7 +24,15 @@ if (error) {
 }
 
 const config = {
-  env: envVars.NODE_ENV
+  env: envVars.NODE_ENV,
+  google: {
+    client: {
+      id: process.env.GOOGLE_CLIENT_ID,
+      secret: process.env.GOOGLE_CLIENT_SECRET
+    },
+    sheetId: process.env.GOOGLE_SHEET_ID
+  },
+  authorizedUsers: process.env.AUTHORIZED_USERS.split(' ')
 };
 
 module.exports = config;

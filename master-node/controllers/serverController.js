@@ -1,3 +1,4 @@
+const config = require('../config/config')
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -5,7 +6,7 @@ const cookieParser = require('cookie-parser')
 const GoogleApi = require('./googleSheetsController');
 const googleApi = new GoogleApi();
 const { OAuth2Client } = require('google-auth-library');
-const client = new OAuth2Client(process.env.CLIENT_ID);
+const client = new OAuth2Client(config.google.client.id);
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 server.listen(5555);
@@ -23,7 +24,7 @@ const workerUpdatesNamespace = io.of('/updates.worker')
 async function verify(token) {
 	const ticket = await client.verifyIdToken({
       idToken: token,
-      audience: process.env.CLIENT_ID,
+      audience: config.google.client.id,
   });
   const payload = ticket.getPayload();
   const userid = payload['sub'];
@@ -43,9 +44,9 @@ function requireLogin(req, res, next) {
 
 app.post('/login', function (req, res) {
 	verify(req.body.id_token).then(response => {
-		const authedUsers = process.env.AUTHED_USERS.split(' ');
+		const authorizedUsers = config.authorizedUsers;
 		var userOk;
-		authedUsers.forEach(user => {
+		authorizedUsers.forEach(user => {
 			if (user === response) {
 				userOk = true;
 				return;

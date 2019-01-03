@@ -1,5 +1,3 @@
-const config = require('./config/config')
-
 function initialize() {
 	const WorkerNodeInterface = require('./controllers/workerNodeInterface.js');
 	const workerNodeInterface = new WorkerNodeInterface();

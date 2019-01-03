@@ -1,7 +1,8 @@
+const config = require('../config/config')
 const fs = require('fs');
 const readline = require('readline');
 const {google} = require('googleapis');
-var sheetId = process.env.SHEET_ID;
+var sheetId = config.google.sheetId;
 // If modifying these scopes, delete credentials.json.
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 const TOKEN_PATH = 'token.json';
