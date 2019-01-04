@@ -1,6 +1,7 @@
+const config = require('../config/config');
 const fs = require('fs');
 const os = require('os');
-const rpiTempModuleFile = (os.type() === 'Darwin' || process.env.MOCK == 'true') ? './mock-rpi-temperature' : './rpi-temperature';
+const rpiTempModuleFile = (os.type() === 'Darwin' || config.mock) ? './mock-rpi-temperature' : './rpi-temperature';
 const rpiTemperature = require(rpiTempModuleFile);
 const BASE_DIR = '/srv/thermo-pi/';
 const roomDesignatorFile = `${BASE_DIR}roomDesignator.json`;

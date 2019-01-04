@@ -8,6 +8,7 @@ const envVarsSchema = Joi.object({
   NODE_ENV: Joi.string()
     .allow(['development', 'production'])
     .default('development'),
+  MOCK: Joi.string(),
   GOOGLE_CLIENT_ID: Joi.string().required(),
   GOOGLE_CLIENT_SECRET: Joi.string().required(),
   GOOGLE_SHEET_ID: Joi.string().required(),
@@ -26,6 +27,7 @@ if (error) {
 
 const config = {
   env: envVars.NODE_ENV,
+  mock: (/true/i).test(envVars.MOCK),
   google: {
     client: {
       id: process.env.GOOGLE_CLIENT_ID,
