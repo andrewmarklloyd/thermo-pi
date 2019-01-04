@@ -5,7 +5,7 @@ var client = exports;
 
 function Client() {
   this.ssdp = nat.ssdp.create();
-  this.timeout = 1800;
+  this.timeout = 10000;
 }
 
 client.create = function create() {
