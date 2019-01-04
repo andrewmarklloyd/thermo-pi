@@ -1,0 +1,5 @@
+#!/bin/bash
+
+./kill-processes.sh
+echo 'Starting worker node process...'
+nohup npm start --prefix /home/pi/thermo-pi/worker-node &
