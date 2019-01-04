@@ -158,13 +158,13 @@ function leaderElection() {
 			workerNodesListener(workerNodeList);
 			const promises = workerNodeList.filter(node => {
 				if (!node.error) {
-					return sendRank(rank, node.address);
+					return sendRank(rank, node.address, localIp);
 				}
 			})
 
 			Promise.all(promises)
-			.then(a => {
-				console.log('sent rank to all other worker nodes', a)
+			.then(workerAddresses => {
+				console.log('sent rank to all other worker nodes', workerAddresses)
 			})
 			.catch(err => {
 				console.log(err)
@@ -256,8 +256,7 @@ function getLocalIpAddress() {
 	return result[1];
 }
 
-function sendRank(rank, node) {
-	var localIp = getLocalIpAddress();
+function sendRank(rank, node, localIp) {
 	const options = {
     headers: {
     	'content-type': 'application/json'
