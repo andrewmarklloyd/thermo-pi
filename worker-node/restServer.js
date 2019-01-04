@@ -1,3 +1,4 @@
+const config = require('./config/config');
 const os = require('os');
 const colors = require('colors');
 const express = require('express');
@@ -42,7 +43,7 @@ app.post('/control', function(req, res) {
 });
 
 app.post('/challenge', function(req, res) {
-  if (req.body.code === process.env.CHALLENGE_TOKEN) {
+  if (req.body.code === config.challengeToken) {
     res.status(200).json({result: 'success'})
   } else {
     res.status(500).json({result: 'fail'})

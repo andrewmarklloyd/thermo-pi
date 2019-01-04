@@ -1,3 +1,4 @@
+const config = require('../config/config');
 const colors = require('colors')
 const findLocalDevices = require('local-devices')
 const os = require('os');
@@ -54,17 +55,6 @@ function LeaderController() {
 			leaderElection();
 		}
 	})
-
-	// const reportSocket = io(`${leadershipUrl}/reports`)
-	// reportSocket.on('connect', function(){
-	// 	console.log('master reports connected')
-	// });
-	// reportSocket.on('event', function(data){
-	// 	console.log('event')
-	// });
-	// reportSocket.on('disconnect', function(){
-	// 	console.log('master reports disconnected')
-	// });
 }
 
 function getNewNamespaceSocket(masterNodeAddress, namespace) {
@@ -200,7 +190,7 @@ function isMasterNode(node) {
     method: 'POST',
     timeout: 2000,
     body: JSON.stringify({
-			code: process.env.CHALLENGE_TOKEN
+			code: config.challengeToken
     })
 	}
 	return new Promise((resolve, reject) => {
@@ -228,7 +218,7 @@ function isWorkerNode(node) {
     method: 'POST',
     timeout: 2000,
     body: JSON.stringify({
-			code: process.env.CHALLENGE_TOKEN
+			code: config.challengeToken
     })
 	}
 	return new Promise((resolve, reject) => {

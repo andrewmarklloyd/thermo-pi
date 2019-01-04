@@ -1,3 +1,4 @@
+const config = require('./config/config');
 const colors = require('colors');
 const { exec } = require('child_process');
 var restServer;
@@ -11,7 +12,7 @@ if (process.argv[2] === '--initialize') {
 function runApplication() {
   restServer = require('./restServer');
 
-  console.log(colors.yellow(`Running worker node in ${process.env.NODE_ENV} environment`))
+  console.log(colors.yellow(`Running worker node in ${config.env} environment`))
   restServer.addStartMasterProcessListener(() => {
     console.log(colors.green('Worker node was elected leader, starting master process'))
     startMasterProcess();
@@ -26,7 +27,7 @@ function runApplication() {
 
 function startMasterProcess() {
   var command;
-  if (process.env.NODE_ENV === 'production') {
+  if (config.env === 'production') {
     command = 'npm start --prefix /home/pi/thermo-pi/master-node';
   } else {
     command = 'cd ../master-node && npm start';

@@ -1,3 +1,4 @@
+const config = require('./config/config');
 const fs = require('fs');
 const colors = require('colors');
 const express = require('express');
@@ -30,7 +31,7 @@ app.post('/', function(req, res) {
       error: null
     });
     setTimeout(function() {
-      if (process.env.NODE_ENV === 'production') {
+      if (config.env === 'production') {
         restartDevice();
       }
     }, 1000)
