@@ -13,7 +13,7 @@ function createPortMapping(client, host) {
       public: 443,
 			private,
       description: 'Thermo-pi master node',
-      ttl: 100
+      ttl: 0
     }, function(err) {
       if (err) {
         reject(err)
