@@ -55,7 +55,7 @@ app.post('/election', function(req, res) {
   electionCandidates[req.body.rank] = req.body.hostname;
   var candidateKeys = Object.keys(electionCandidates);
   if (candidateKeys.length == registeredWorkerNodes.length) {
-    console.log('All registered worker nodes sent ranks. Beginning leader determination');
+    console.log('All registered worker nodes sent ranks. Beginning leader determination:', electionCandidates);
     const ordered = {};
     candidateKeys.sort().forEach(function(key) {
       ordered[key] = electionCandidates[key];
