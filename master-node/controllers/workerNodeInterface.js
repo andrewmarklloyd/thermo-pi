@@ -68,4 +68,9 @@ WorkerNodeInterface.prototype.setRoomAddress = function(data) {
 	roomAddressMap[data.roomFunction] = data.address;
 }
 
+WorkerNodeInterface.prototype.removeRoomAddress = function(roomFunction) {
+	console.log('Removing worker room address', roomFunction, roomAddressMap[roomFunction])
+	delete roomAddressMap[roomFunction];
+}
+
 module.exports = WorkerNodeInterface;

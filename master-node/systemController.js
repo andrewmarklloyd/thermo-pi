@@ -6,8 +6,11 @@ function initialize() {
 	const serverController = new ServerController();
 
 	serverController.addWorkerRegisterListener((data) => {
-		//TODO what if we lose a worker. We need to notify the workernode interface
 		workerNodeInterface.setRoomAddress(data)
+	});
+
+	serverController.addWorkerDisconnectListener((data) => {
+		workerNodeInterface.removeRoomAddress(data)
 	});
 
 	serverController.setRoomTempListener((roomTemp, callback) => {

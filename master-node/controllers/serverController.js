@@ -12,6 +12,7 @@ const io = require('socket.io')(server);
 server.listen(5555);
 const fs = require('fs');
 const registerListeners = [];
+const disconnectListeners = [];
 var roomTempListener = null;
 const TwoWayMap = require('../helpers/TwoWayMap')
 var socketClientsTwoWayMap = new TwoWayMap();
@@ -80,7 +81,8 @@ app.get('/login.js', function(req, res) {
 });
 
 app.post('/challenge', function(req, res) {
-	console.log('challenge from worker node')
+	var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+	console.log('challenge from worker node:', ip)
   if (req.body.code === config.challengeToken) {
     res.status(200).json({result: 'success'})
   } else {
@@ -89,7 +91,6 @@ app.post('/challenge', function(req, res) {
 })
 
 app.post('/temp', function (req, res) {
-	//TODO authorize this post
 	if (roomTempListener === null) {
 		return res.status(500).json({error: 'Master node not initialized yet, please try again.'})
 	}
@@ -149,6 +150,9 @@ leadershipNamespace.on('connect', function (socket) {
 			room: socketClientsTwoWayMap.get(socket.id),
 			status: 'disconnected'
 		});
+		disconnectListeners.forEach(listener => {
+			listener(socketClientsTwoWayMap.get(socket.id));
+		})
 		socketClientsTwoWayMap.delete(socket.id);
 	})
 })
@@ -189,6 +193,10 @@ function ServerController() {
 
 ServerController.prototype.addWorkerRegisterListener = function(listener) {
 	registerListeners.push(listener);
+}
+
+ServerController.prototype.addWorkerDisconnectListener = function(listener) {
+	disconnectListeners.push(listener);
 }
 
 ServerController.prototype.setRoomTempListener = function(listener) {
