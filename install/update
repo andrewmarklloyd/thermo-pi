@@ -12,11 +12,9 @@ else
   echo 'Installing master-node dependencies...'
   cd ../master-node
   npm run install.prod
-  git checkout -- .
   echo 'Installing worker-node dependencies...'
   cd ../worker-node
   npm run install.prod
-  git checkout -- .
   ../install/kill-processes.sh
   echo 'Starting worker node process...'
   nohup npm start &
