@@ -78,7 +78,7 @@ function configureProxy() {
   # sudo nano /etc/nginx/sites-available/default
   # sudo systemctl restart nginx
   # location / {
-  #       proxy_pass http://localhost:8080;
+  #       proxy_pass http://localhost:5555;
   #       proxy_http_version 1.1;
   #       proxy_set_header Upgrade $http_upgrade;
   #       proxy_set_header Connection 'upgrade';
