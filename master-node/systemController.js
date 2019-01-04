@@ -1,4 +1,14 @@
 function initialize() {
+	const IngressController = require('./controllers/ingressController');
+	const ingressController = new IngressController();
+	ingressController.openIngress().then(() => {
+	  console.log('Ingress OPENED for device')
+	})
+	.catch(err => {
+	  console.log(err)
+		console.log('****** Device has no ingress, app is not accessible from outside of network!')
+	})
+
 	const WorkerNodeInterface = require('./controllers/workerNodeInterface.js');
 	const workerNodeInterface = new WorkerNodeInterface();
 
@@ -17,6 +27,5 @@ function initialize() {
 		workerNodeInterface.setRoomTemp(roomTemp, callback);
 	})
 }
-
 
 initialize();
