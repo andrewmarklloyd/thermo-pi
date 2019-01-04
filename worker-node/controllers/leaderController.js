@@ -188,7 +188,7 @@ function isMasterNode(node) {
     },
     url: `http://${node}:5555/challenge`,
     method: 'POST',
-    timeout: 2000,
+    timeout: 5000,
     body: JSON.stringify({
 			code: config.challengeToken
     })
