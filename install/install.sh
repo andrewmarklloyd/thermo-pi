@@ -73,7 +73,7 @@ function configHardware() {
 }
 
 function configureProxy() {
-  # sudo apt-get install nginx
+  # sudo apt-get install nginx -y
   # sudo /etc/init.d/nginx start
   # sudo nano /etc/nginx/sites-available/default
   # sudo systemctl restart nginx
