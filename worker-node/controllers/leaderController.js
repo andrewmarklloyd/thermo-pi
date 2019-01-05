@@ -243,6 +243,7 @@ function isWorkerNode(node) {
 }
 
 function getLocalIpAddress() {
+	//TODO: use hostname instead?
 	var ifs = require('os').networkInterfaces();
 	var result = Object.keys(ifs)
 	  .map(x => [x, ifs[x].filter(x => x.family === 'IPv4')[0]])
@@ -270,7 +271,7 @@ function sendRank(rank, node, localIp) {
 	      reject(error)
 	    } else {
 	      if (response.statusCode === 200) {
-	        resolve(body);
+	        resolve({address: node});
 	      } else {
 	        reject(body);
 	      }
