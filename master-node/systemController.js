@@ -13,6 +13,13 @@ function setupIngress(callback) {
 }
 
 function initialize() {
+	const nodeSSDP = require('node-ssdp');
+	const SSDPServer = nodeSSDP.Server;
+	const masterssdpServer = new SSDPServer();
+	const MASTER_SERVICE_URN = 'urn:schemas-upnp-org:service:ThermoPi:Master';
+	masterssdpServer.addUSN(MASTER_SERVICE_URN);
+	masterssdpServer.start();
+
 	const WorkerNodeInterface = require('./controllers/workerNodeInterface.js');
 	const workerNodeInterface = new WorkerNodeInterface();
 
