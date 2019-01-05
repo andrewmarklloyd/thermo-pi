@@ -24,7 +24,6 @@ var numCurrentReconnectAttempts = 0;
 var currentlyElecting = false;
 var currentlyFindingMaster = false;
 const maxMasterNodeReconnectAttempts = 4;
-const maxMasterNodeConnectTimeout = 10000;
 var masterConnected = false;
 //TODO: set in env vars
 const TEMP_UPDATE_INTERVAL_SECONDS = 5;
@@ -38,17 +37,8 @@ configController.getRoomDesignator()
 	})
 
 function LeaderController() {
-	// on startup if we don't connect to master within timeout, begin leader election
-	setTimeout(function() {
-		if (!masterConnected && !currentlyElecting && !currentlyFindingMaster) {
-			console.log('Max timeout waiting for master node, electing new leader')
-			leaderElection();
-		}
-	}, maxMasterNodeConnectTimeout)
-
 	getMasterNode()
 	.then(masterNodeAddress => {
-		console.log(masterNodeAddress)
 		var masterNodeRunning = masterNodeAddress !== null;
 
 		if (masterNodeRunning) {
@@ -161,7 +151,7 @@ function getAllWorkerNodesSSDP() {
 		setTimeout(() => {
 			ssdpClient.stop();
 			resolve(workerNodes);
-		}, 3000)
+		}, 2000)
 	});
 }
 
@@ -177,7 +167,7 @@ function getMasterNode() {
 		setTimeout(() => {
 			ssdpClient.stop();
 			resolve(masterNodeAddress);
-		}, 3000)
+		}, 2000)
 	});
 }
 
