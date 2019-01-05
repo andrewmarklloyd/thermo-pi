@@ -1,6 +1,15 @@
 const config = require('../config/config');
-const colors = require('colors')
-const findLocalDevices = require('local-devices')
+const colors = require('colors');
+const findLocalDevices = require('local-devices');
+const nodeSSDP = require('node-ssdp');
+const WORKER_SERVICE_URN = 'urn:schemas-upnp-org:service:ThermoPi:Worker';
+const SSDPServer = nodeSSDP.Server;
+const SSDPClient = nodeSSDP.Client;
+const workerssdpServer = new SSDPServer();
+const workerssdpClient = new SSDPClient();
+workerssdpServer.addUSN(WORKER_SERVICE_URN);
+workerssdpServer.start();
+
 const os = require('os');
 const request = require('request');
 const ConfigController = require('./configController');
@@ -127,39 +136,22 @@ function initSocketNamespaces(masterNodeAddress) {
 
 function leaderElection() {
 	currentlyElecting = true;
-
+	const localIp = getLocalIpAddress();
 	const rank = randomIntFromInterval();
-	getAllWorkerNodes()
-		.then(workerNodes => {
-			const workerNodeList = workerNodes.filter(node => {
-				return !node.error;
-			})
-			const localIp = getLocalIpAddress();
-			var currentNodeFound = false;
-			workerNodeList.forEach(node => {
-				if (node.address === localIp) {
-					currentNodeFound = true;
-				}
-			})
-			if (!currentNodeFound) {
-				workerNodeList.push({address: localIp});
-			}
-
-			workerNodesListener(workerNodeList);
-			const promises = workerNodeList.filter(node => {
-				if (!node.error) {
-					return sendRank(rank, node.address, localIp);
-				}
-			})
-
-			Promise.all(promises)
-			.then(workerAddresses => {
-				console.log('sent rank to all other worker nodes', workerAddresses)
-			})
-			.catch(err => {
-				console.log(err)
-			})
+	getAllWorkerNodesSSDP().then(nodes => {
+		const promises = [];
+		workerNodesListener(Array.from(nodes));
+		nodes.forEach(node => {
+			promises.push(sendRank(rank, node.address, localIp));
 		})
+		Promise.all(promises)
+		.then(workerAddresses => {
+			console.log('sent rank to all other worker nodes', workerAddresses)
+		})
+		.catch(err => {
+			console.log(err)
+		})
+	})
 }
 
 function getAllWorkerNodes() {
@@ -169,6 +161,20 @@ function getAllWorkerNodes() {
 		})
 		return Promise.all(workerNodePromises);
 	})
+}
+
+function getAllWorkerNodesSSDP() {
+	const workerNodes = new Set();
+	workerssdpClient.on('response', function (headers, statusCode, rinfo) {
+		workerNodes.add({address: rinfo.address});
+	});
+	workerssdpClient.search(WORKER_SERVICE_URN);
+
+	return new Promise((resolve, reject) => {
+		setTimeout(() => {
+			resolve(workerNodes);
+		}, 5000)
+	});
 }
 
 function getMasterNode() {
