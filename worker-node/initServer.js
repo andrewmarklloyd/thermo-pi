@@ -10,6 +10,8 @@ const { exec } = require('child_process');
 var app = express();
 app.use(bodyParser.json())
 
+//TODO: use ssdp to get config?
+//https://github.com/ddavignon/pi-connectivity
 app.get('/', function(req, res) {
   res.sendFile(`${__dirname}/web/index.html`)
 });

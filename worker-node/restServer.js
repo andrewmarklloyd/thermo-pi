@@ -10,11 +10,7 @@ var startMasterProcessListener;
 var electionCandidates = {}
 var registeredWorkerNodes = [];
 var ifs = require('os').networkInterfaces();
-var result = Object.keys(ifs)
-  .map(x => [x, ifs[x].filter(x => x.family === 'IPv4')[0]])
-  .filter(x => x[1])
-  .map(x => x[1].address);
-const localIp = result[1];
+const localIp = require('ip').address();
 leaderController.addWorkerNodeListener((workerNodes) => {
   registeredWorkerNodes = workerNodes;
 });

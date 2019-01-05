@@ -2,6 +2,8 @@ const config = require('../config/config');
 const colors = require('colors');
 const findLocalDevices = require('local-devices');
 const nodeSSDP = require('node-ssdp');
+//TODO: append uuid env var to this
+//https://github.com/nicholaswilde/rpi-smartthings/blob/master/server.js
 const WORKER_SERVICE_URN = 'urn:schemas-upnp-org:service:ThermoPi:Worker';
 const SSDPServer = nodeSSDP.Server;
 const SSDPClient = nodeSSDP.Client;
@@ -154,15 +156,6 @@ function leaderElection() {
 	})
 }
 
-function getAllWorkerNodes() {
-	return findLocalDevices().then(devices => {
-		var workerNodePromises = devices.map(device => {
-			return isWorkerNode(device.ip);
-		})
-		return Promise.all(workerNodePromises);
-	})
-}
-
 function getAllWorkerNodesSSDP() {
 	const workerNodes = new Set();
 	workerssdpClient.on('response', function (headers, statusCode, rinfo) {
@@ -243,14 +236,7 @@ function isWorkerNode(node) {
 }
 
 function getLocalIpAddress() {
-	//TODO: use hostname instead?
-	var ifs = require('os').networkInterfaces();
-	var result = Object.keys(ifs)
-	  .map(x => [x, ifs[x].filter(x => x.family === 'IPv4')[0]])
-	  .filter(x => x[1])
-	  .map(x => x[1].address);
-	// return result[result.length - 1];
-	return result[1];
+	return require('ip').address();
 }
 
 function sendRank(rank, node, localIp) {
