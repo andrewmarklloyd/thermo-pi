@@ -19,7 +19,7 @@ CONFIG_DIR=/srv/thermo-pi/
 INIT_FILE=${CONFIG_DIR}initialized.json
 SYSTEM_UNAME=$(uname)
 
-function findProcess() {
+findProcess() {
   port=$1
   pid=`netstat -anp 2>/dev/null | grep -w ":${port}" | awk '{print $7}'`
   pid=${pid%/*}
