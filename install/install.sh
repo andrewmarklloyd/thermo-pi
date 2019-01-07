@@ -66,6 +66,7 @@ function configureStartup() {
   sudo cp /home/pi/thermo-pi/install/thermo-pi /etc/init.d/thermo-pi
   sudo chmod 755 /etc/init.d/thermo-pi
   sudo update-rc.d thermo-pi defaults
+  sudo systemctl daemon-reload
   sudo service thermo-pi start
 }
 

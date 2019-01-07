@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #https://github.com/chovy/node-startup/blob/master/init.d/node-app
 
