@@ -1,38 +1,92 @@
-#!/bin/bash
+#!/bin/sh
 
+#https://github.com/chovy/node-startup/blob/master/init.d/node-app
+
+### BEGIN INIT INFO
+# Provides: node
+# Required-Start:    $network $remote_fs $local_fs
+# Required-Stop:     $network $remote_fs $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: start and stop node
+# Description: Node process for app
+### END INIT INFO
+
+###############
+
+USAGE="Usage: $0 {start|stop|restart|status}"
 CONFIG_DIR=/srv/thermo-pi/
 INIT_FILE=${CONFIG_DIR}initialized.json
 SYSTEM_UNAME=$(uname)
-if [[ ${SYSTEM_UNAME} == 'Darwin' ]]; then
-  APP_FILE=${thermo_pi}/worker-node
-  initCommand="npm run init --prefix ${APP_FILE}"
-  startCommand="npm start --prefix ${APP_FILE}"
-elif [[ ${SYSTEM_UNAME} == 'Linux' ]]; then
-  APP_FILE=/home/pi/thermo-pi/worker-node
-  initCommand="npm run init --prefix ${APP_FILE}"
-  startCommand="npm start --prefix ${APP_FILE}"
-else
-  echo 'System uname not recognized. Expecting Darwin or Linux'
-  exit 1
-fi
 
-if [[ ! -f ${INIT_FILE} ]]; then
-  echo 'thermo-pi not initialized, beginning initialization server'
-  eval ${initCommand}
-else
-  echo 'thermo-pi already initialized, beginning worker node'
-  eval ${startCommand}
-fi
+function findProcess() {
+  port=$1
+  pid=`netstat -anp 2>/dev/null | grep -w ":${port}" | awk '{print $7}'`
+  pid=${pid%/*}
+  echo $pid
+}
 
-# appInitialized=$(node -e "console.log(require('${INIT_FILE}').value)")
-#
-# if [[ ${appInitialized} == 'true' ]]; then
-#   echo 'thermo-pi already initialized, beginning worker node'
-#   eval ${startCommand}
-# elif [[ ${appInitialized} == 'false' ]]; then
-#   echo 'thermo-pi not initialized, beginning initialization server'
-#   eval ${initCommand}
-# else
-#   echo "Initialization configuration unknown. Check ${INIT_FILE}"
-#   exit 1
-# fi
+start_app() {
+  if [[ ${SYSTEM_UNAME} == 'Darwin' ]]; then
+    APP_FILE=${thermo_pi}/worker-node
+    initCommand="npm run init --prefix ${APP_FILE}"
+    startCommand="npm start --prefix ${APP_FILE}"
+  elif [[ ${SYSTEM_UNAME} == 'Linux' ]]; then
+    APP_FILE=/home/pi/thermo-pi/worker-node
+    initCommand="npm run init --prefix ${APP_FILE}"
+    startCommand="npm start --prefix ${APP_FILE}"
+  else
+    echo 'System uname not recognized. Expecting Darwin or Linux'
+    exit 1
+  fi
+
+  if [[ ! -f ${INIT_FILE} ]]; then
+    echo 'thermo-pi not initialized, beginning initialization server'
+    eval ${initCommand} &
+  else
+    echo 'thermo-pi already initialized, beginning worker node'
+    eval ${startCommand} &
+  fi  
+}
+
+stop_app() {
+  masterPID=`findProcess 5555`
+  workerPID=`findProcess 8888`
+  if [[ -n ${masterPID} ]]; then
+    echo "Killing master node process"
+    kill ${masterPID}
+  fi
+
+  if [[ -n ${workerPID} ]]; then
+    echo "Killing worker node process"
+    kill ${workerPID}
+  fi
+}
+
+status_app() {
+  echo "Unknown status, not implemented yet."
+}
+
+case "$1" in
+    start)
+        start_app
+    ;;
+
+    stop)
+        stop_app
+    ;;
+
+    restart)
+        stop_app
+        start_app
+    ;;
+
+    status)
+        status_app
+    ;;
+
+    *)
+        echo $USAGE
+        exit 1
+    ;;
+esac
