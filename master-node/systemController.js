@@ -1,3 +1,5 @@
+const config = require('./config/config');
+
 function setupIngress(callback) {
 	const IngressController = require('./controllers/ingressController');
 	const ingressController = new IngressController();
@@ -39,6 +41,10 @@ function initialize() {
 	})
 }
 
-setupIngress(() => {
+if (config.env === 'production') {
+	setupIngress(() => {
+		initialize();
+	});
+} else {
 	initialize();
-});
+}

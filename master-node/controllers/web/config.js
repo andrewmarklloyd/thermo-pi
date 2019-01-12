@@ -1,24 +1,13 @@
 var id_token;
 function onSignIn(googleUser) {
   id_token = googleUser.getAuthResponse().id_token;
-  var profile = googleUser.getBasicProfile();
-}
-
-$(function () {
-  $('#config-form').validator();
-
-  function objectifyForm(formArray) {
-    var returnArray = {};
-    for (var i = 0; i < formArray.length; i++){
-      returnArray[formArray[i]['name']] = formArray[i]['value'];
-    }
-    return returnArray;
-  }
-
-
 
   const socket = io('/updates.client');
   socket.on('connect', function(){
+    socket.emit('authentication', {id_token});
+    socket.on('authenticated', function() {
+      
+    });
     $('#master-connection').removeClass('badge-danger');
     $('#master-connection').addClass('badge-success');
   });
@@ -45,7 +34,9 @@ $(function () {
       $(`#${data.room}-connection`).addClass('badge-danger');
     }
   });
+}
 
+$(function () {
   function changeDesiredTemperature(room, direction) {
     $.post({
       type: "POST",

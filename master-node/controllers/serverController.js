@@ -14,12 +14,35 @@ const fs = require('fs');
 const registerListeners = [];
 const disconnectListeners = [];
 var roomTempListener = null;
-const TwoWayMap = require('../helpers/TwoWayMap')
+const TwoWayMap = require('../helpers/TwoWayMap');
 var socketClientsTwoWayMap = new TwoWayMap();
 
 const leadershipNamespace = io.of('/leadership');
 const clientUpdatesNamespace = io.of('/updates.client');
 const workerUpdatesNamespace = io.of('/updates.worker')
+
+require('socketio-auth')(clientUpdatesNamespace, {
+  authenticate: function (socket, data, callback) {
+		verify(data.id_token).then(response => {
+			const authorizedUsers = config.authorizedUsers;
+			var userOk;
+			authorizedUsers.forEach(user => {
+				if (user === response) {
+					userOk = true;
+					return;
+				}
+			})
+			if (userOk) {
+	      return callback(null, true);
+			} else {
+				callback(new Error("Not authorized"));
+			}
+		}).catch(err => {
+			console.log(err)
+			callback(new Error("Not authorized"));
+		})
+  }
+});
 
 async function verify(token) {
 	const ticket = await client.verifyIdToken({
