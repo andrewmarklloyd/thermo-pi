@@ -33,7 +33,7 @@ KWARGS=""
 # fi
 
 pid_file_exists() {
-  [ -f "$PID_FILE" ]
+  [[ -f "$PID_FILE" ]]
 }
 
 get_pid() {
@@ -42,7 +42,7 @@ get_pid() {
 
 is_running() {
   PID="$(get_pid)"
-  [ -d /proc/$PID ]
+  [[ -d /proc/$PID ]]
 }
 
 findProcess() {
@@ -85,7 +85,7 @@ start_it() {
   fi
   echo "Starting ${APP_NAME} ..."
   echo "cd ${APP_DIR}
-    if [ $? -ne 0 ]; then
+    if [[ $? -ne 0 ]]; then
       exit
     fi
     set -a
@@ -104,7 +104,7 @@ start_app() {
       exit 1
     else
       echo "$APP_NAME stopped, but pid file exists"
-      if [ $FORCE_OP = true ]
+      if [[ $FORCE_OP = true ]]
       then
         echo "Forcing start anyways"
         remove_pid_file
@@ -127,7 +127,7 @@ stop_app() {
       echo "$APP_NAME stopped"
     else
       echo "$APP_NAME already stopped, but pid file exists"
-      if [ $FORCE_OP = true ]
+      if [[ $FORCE_OP = true ]]
       then
         echo "Forcing stop anyways ..."
         remove_pid_file
