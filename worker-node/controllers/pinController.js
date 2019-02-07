@@ -11,7 +11,7 @@ const pinMap = require('../models/pins');
 function RelayController() {
 	const keys = Object.keys(pinMap);
 	keys.forEach(key => {
-		rpio.open(pinMap[key], rpio.OUTPUT, rpio.HIGH);
+		rpio.open(pinMap[key], rpio.OUTPUT, rpio.LOW);
 	})
 }
 
@@ -22,7 +22,7 @@ function closeRelay() {
 	return new Promise((resolve, reject) => {
 		const PIN = pinMap.default;
 		// console.log('closing relay')
-		rpio.write(PIN, rpio.LOW);
+		rpio.write(PIN, rpio.HIGH);
 		resolve();
 	})
 }
@@ -34,7 +34,7 @@ function openRelay() {
 	return new Promise((resolve, reject) => {
 		const PIN = pinMap.default;
 		// console.log('opening relay')
-		rpio.write(PIN, rpio.HIGH);
+		rpio.write(PIN, rpio.LOW);
 		resolve();
 	})
 }
