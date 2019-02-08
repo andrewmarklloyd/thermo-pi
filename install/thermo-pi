@@ -20,48 +20,71 @@ APP_NAME="thermo-pi"
 CONFIG_DIR=/srv/thermo-pi
 INIT_FILE=${CONFIG_DIR}/initialized.json
 PID_DIR="$CONFIG_DIR/pid"
-PID_FILE="$PID_DIR/thermo-pi.pid"
-LOG_DIR="$APP_DIR/log"
+PID_FILE_WORKER="$PID_DIR/thermo-pi-worker.pid"
+PID_FILE_MASTER="$PID_DIR/thermo-pi-master.pid"
+LOG_DIR="$CONFIG_DIR/log"
 LOG_FILE="$LOG_DIR/$APP_NAME.log"
 SYSTEM_UNAME=$(uname)
 GROUP="$USER"
 KWARGS=""
+FORCE_OP=true
 
 # if [ "$(id -u)" != "0" ]; then
 #    echo "This script must be run as root" 1>&2
 #    exit 1
 # fi
 
-pid_file_exists() {
-  [[ -f "$PID_FILE" ]]
+pid_file_master_exists() {
+  [[ -f "$PID_FILE_MASTER" ]]
 }
 
-get_pid() {
-  echo "$(cat "$PID_FILE")"
+pid_file_worker_exists() {
+  [[ -f "$PID_FILE_WORKER" ]]
 }
 
-is_running() {
-  PID="$(get_pid)"
+get_pid_master() {
+  echo "$(cat "$PID_FILE_MASTER")"
+}
+
+get_pid_worker() {
+  echo "$(cat "$PID_FILE_WORKER")"
+}
+
+is_master_running() {
+  PID="$(get_pid_master)"
   [[ -d /proc/$PID ]]
 }
 
-findProcess() {
-  port=$1
-  pid=`netstat -anp 2>/dev/null | grep -w ":${port}" | awk '{print $7}'`
-  pid=${pid%/*}
-  echo $pid
+is_worker_running() {
+  PID="$(get_pid_worker)"
+  [[ -d /proc/$PID ]]
 }
 
-stop_process() {
-  PID=$(get_pid)
-  echo "Killing process $PID"
-  kill $PID
-  wait $PID 2>/dev/null
+# findProcess() {
+#   port=$1
+#   pid=`netstat -anp 2>/dev/null | grep -w ":${port}" | awk '{print $7}'`
+#   pid=${pid%/*}
+#   echo $pid
+# }
+
+stop_processes() {
+  PID_MASTER=$(get_pid_master)
+  echo "Killing master process: $PID_MASTER"
+  kill $PID_MASTER
+  wait $PID_MASTER 2>/dev/null
+
+  PID_WORKER=$(get_pid_worker)
+  echo "Killing worker process: $PID_WORKER"
+  kill $PID_WORKER
+  wait $PID_WORKER 2>/dev/null
 }
 
-remove_pid_file() {
-  echo "Removing pid file"
-  rm -f "$PID_FILE"
+remove_pid_files() {
+  echo "Removing master pid file"
+  rm -f "$PID_FILE_MASTER"
+
+  echo "Removing worker pid file"
+  rm -f "$PID_FILE_WORKER"
 }
 
 logs() {
@@ -74,9 +97,9 @@ start_it() {
   mkdir -p "$LOG_DIR"
   chown $USER:$GROUP "$LOG_DIR"
 
-  APP_FILE=/home/pi/thermo-pi/worker-node
-  initCommand="npm run init --prefix ${APP_FILE}"
-  startCommand="npm start --prefix ${APP_FILE}"
+  APP_DIR=/home/pi/thermo-pi/worker-node
+  initCommand="npm run init --prefix ${APP_DIR}"
+  startCommand="npm start --prefix ${APP_DIR}"
 
   if [[ ! -f ${INIT_FILE} ]]; then
     command=${initCommand}
@@ -84,20 +107,19 @@ start_it() {
     command=${startCommand}
   fi
   echo "Starting ${APP_NAME} ..."
-  echo "cd ${APP_DIR}
-    if [[ $? -ne 0 ]]; then
+  echo "if [[ $? -ne 0 ]]; then
       exit
     fi
     set -a
     eval $command &>> \"$LOG_FILE\" &
     echo \$! > $PID_FILE" | sudo -i -u $USER
-  echo "$APP_NAME started with pid $(get_pid)"
+  echo "$APP_NAME started with pid $(get_pid_worker)"
 }
 
 start_app() {
-  if pid_file_exists
+  if pid_file_worker_exists
   then
-    if is_running
+    if is_worker_running
     then
       PID=$(get_pid)
       echo "$APP_NAME already running with pid $PID"
@@ -107,7 +129,7 @@ start_app() {
       if [[ $FORCE_OP = true ]]
       then
         echo "Forcing start anyways"
-        remove_pid_file
+        remove_pid_files
         start_it
       fi
     fi
@@ -117,20 +139,20 @@ start_app() {
 }
 
 stop_app() {
-  if pid_file_exists
+  if pid_file_worker_exists
   then
-    if is_running
+    if is_worker_running
     then
       echo "Stopping $APP_NAME ..."
-      stop_process
-      remove_pid_file
+      stop_processes
+      remove_pid_files
       echo "$APP_NAME stopped"
     else
       echo "$APP_NAME already stopped, but pid file exists"
       if [[ $FORCE_OP = true ]]
       then
         echo "Forcing stop anyways ..."
-        remove_pid_file
+        remove_pid_files
         echo "$APP_NAME stopped"
       else
         exit 1
@@ -143,11 +165,11 @@ stop_app() {
 }
 
 status_app() {
-  if pid_file_exists
+  if pid_file_worker_exists
   then
-    if is_running
+    if is_worker_running
     then
-      PID=$(get_pid)
+      PID=$(get_pid_worker)
       echo "$APP_NAME running with pid $PID"
     else
       echo "$APP_NAME stopped, but pid file exists"
