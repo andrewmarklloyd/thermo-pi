@@ -121,7 +121,7 @@ start_app() {
   then
     if is_worker_running
     then
-      PID=$(get_pid)
+      PID=$(get_pid_worker)
       echo "$APP_NAME already running with pid $PID"
       exit 1
     else
