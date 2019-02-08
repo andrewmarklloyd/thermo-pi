@@ -112,7 +112,7 @@ start_it() {
     fi
     set -a
     eval $command &>> \"$LOG_FILE\" &
-    echo \$! > $PID_FILE" | sudo -i -u $USER
+    echo \$! > $PID_FILE_WORKER" | sudo -i -u $USER
   echo "$APP_NAME started with pid $(get_pid_worker)"
 }
 
