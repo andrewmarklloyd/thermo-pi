@@ -14,6 +14,8 @@
 
 ###############
 
+NPM_EXE=$(which npm)
+NODE_EXE=$(which node)
 USAGE="Usage: $0 {start|stop|restart|status}"
 APP_DIR="/home/pi/thermo-pi"
 APP_NAME="thermo-pi"
@@ -28,6 +30,7 @@ SYSTEM_UNAME=$(uname)
 GROUP="$USER"
 KWARGS=""
 FORCE_OP=true
+
 
 # if [ "$(id -u)" != "0" ]; then
 #    echo "This script must be run as root" 1>&2
@@ -98,8 +101,8 @@ start_it() {
   chown $USER:$GROUP "$LOG_DIR"
 
   APP_DIR=/home/pi/thermo-pi/worker-node
-  initCommand="npm run init --prefix ${APP_DIR}"
-  startCommand="npm start --prefix ${APP_DIR}"
+  initCommand="${NPM_EXE} run init --prefix ${APP_DIR}"
+  startCommand="${NPM_EXE} start --prefix ${APP_DIR}"
 
   if [[ ! -f ${INIT_FILE} ]]; then
     command=${initCommand}
@@ -107,12 +110,9 @@ start_it() {
     command=${startCommand}
   fi
   echo "Starting ${APP_NAME} ..."
-  echo "if [[ $? -ne 0 ]]; then
-      exit
-    fi
-    set -a
-    eval $command &>> \"$LOG_FILE\" &
-    echo \$! > $PID_FILE_WORKER" | sudo -i -u $USER
+  set -a
+  eval $command &>> $LOG_FILE &
+  echo $! > $PID_FILE_WORKER
   echo "$APP_NAME started with pid $(get_pid_worker)"
 }
 
