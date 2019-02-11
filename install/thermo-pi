@@ -16,7 +16,7 @@
 
 NPM_EXE=$(which npm)
 NODE_EXE=$(which node)
-USAGE="Usage: $0 {start|stop|restart|status}"
+USAGE="Usage: $0 {start|stop|restart|status|logs [-f|-a]}"
 APP_DIR="/home/pi/thermo-pi"
 APP_NAME="thermo-pi"
 CONFIG_DIR=/srv/thermo-pi
@@ -91,7 +91,19 @@ remove_pid_files() {
 }
 
 logs() {
-  cat $LOG_FILE
+  case "$1" in
+    "-f")
+      tail -f $LOG_FILE
+    ;;
+
+    "-a")
+      cat $LOG_FILE
+    ;;
+
+    *)
+      tail $LOG_FILE
+    ;;
+  esac
 }
 
 start_it() {
@@ -198,7 +210,7 @@ case "$1" in
   ;;
 
   logs)
-    logs
+    logs $@
   ;;
 
   *)
