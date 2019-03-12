@@ -51,7 +51,7 @@ is_running() {
 
 list_descendants ()
 {
-  local children=$(ps -o pid= --ppid "$1")
+  local children=$(ps -o pid= --ppid "$1" | tr -d '[:space:]')
 
   for pid in $children; do
     list_descendants "$pid"
