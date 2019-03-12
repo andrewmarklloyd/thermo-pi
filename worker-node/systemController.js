@@ -1,6 +1,5 @@
 const config = require('./config/config');
 const colors = require('colors');
-const { exec } = require('child_process');
 var restServer;
 
 if (process.argv[2] === '--initialize') {
@@ -26,26 +25,8 @@ function runApplication() {
 
 
 function startMasterProcess() {
-  var command;
-  if (config.env === 'production') {
-    command = 'npm start --prefix /home/pi/thermo-pi/master-node';
-  } else {
-    command = 'cd ../master-node && npm start';
-  }
   console.log(colors.yellow('Starting master node process'));
-  const childProcess = exec(command, {
-    shell: true
-  });
-
-  childProcess.stdout.on('data', (data) => {
-    console.log(`stdout: ${data}`);
-  });
-
-  childProcess.stderr.on('data', (data) => {
-    console.log(`stderr: ${data}`);
-  });
-
-  childProcess.on('close', (code) => {
-    console.log(`child process exited with code ${code}`);
-  });
+  var command;
+  const masterSystemController = require('../master-node/systemController');
+  console.log(masterSystemController)
 }
