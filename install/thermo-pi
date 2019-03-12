@@ -49,11 +49,27 @@ is_running() {
   [[ -d /proc/$PID ]]
 }
 
+list_descendants ()
+{
+  local children=$(ps -o pid= --ppid "$1")
+
+  for pid in $children; do
+    list_descendants "$pid"
+  done
+
+  echo "$children"
+}
+
 stop_process() {
   PID=$(get_pid)
+  list_descendants $PID
   echo "Killing process: $PID"
-  kill $PID
-  wait $PID 2>/dev/null
+  kill `ps -o pid= --ppid $PID`
+  while [ -e /proc/$PID ]; do
+      echo "Process: $PID is still running"
+      sleep 1
+  done
+  echo "Process $PID has finished"
 }
 
 remove_pid_file() {
@@ -124,6 +140,7 @@ stop_app() {
       stop_process
       remove_pid_file
       echo "$APP_NAME stopped"
+
     else
       echo "$APP_NAME already stopped, but pid file exists"
       if [[ $FORCE_OP = true ]]; then
