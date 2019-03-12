@@ -49,26 +49,27 @@ is_running() {
   [[ -d /proc/$PID ]]
 }
 
-list_descendants ()
-{
-  local children=$(ps -o pid= --ppid "$1" | tr -d '[:space:]')
+kill_descendants () {
+  kill "$1"
+  local children=$(ps -o pid= --ppid "$1")
 
   for pid in $children; do
-    list_descendants "$pid"
+    if [[ ! -z $pid ]]; then
+      list_descendants "$pid"
+    fi
   done
-
-  echo "$children"
+  echo "Killing process: $children"
+  kill "$children"
+  # while [ -e /proc/$PID ]; do
+  #   echo "Process: $PID is still running"
+  #   sleep 1
+  # done
 }
 
 stop_process() {
   PID=$(get_pid)
-  list_descendants $PID
-  echo "Killing process: $PID"
-  kill `ps -o pid= --ppid $PID`
-  while [ -e /proc/$PID ]; do
-      echo "Process: $PID is still running"
-      sleep 1
-  done
+  kill_descendants $PID
+
   echo "Process $PID has finished"
 }
 
