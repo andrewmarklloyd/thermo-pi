@@ -87,14 +87,13 @@ start_it() {
   initCommand="${NPM_EXE} run init --prefix ${APP_DIR}"
   startCommand="${NPM_EXE} start --prefix ${APP_DIR}"
 
-  if [[ ! -f ${INIT_FILE} ]]; then
-    command=${initCommand}
-  else
-    command=${startCommand}
-  fi
   echo "Starting ${APP_NAME} ..."
   set -a
-  eval $command &>> $LOG_FILE &
+  if [[ ! -f ${INIT_FILE} ]]; then
+    ${NPM_EXE} run init --prefix ${APP_DIR} &>> $LOG_FILE &
+  else
+    ${NPM_EXE} start --prefix ${APP_DIR} &>> $LOG_FILE &
+  fi
   echo $! > $PID_FILE
   echo "$APP_NAME started with pid $(get_pid)"
 }
