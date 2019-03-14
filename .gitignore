@@ -6,3 +6,5 @@ credentials.json
 systemController-*
 *.csv
 *.out
+install/certbot/.well-known/acme-challenge/*
+!install/certbot/.well-known/acme-challenge/.gitkeep
