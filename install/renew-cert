@@ -1,0 +1,7 @@
+#!/bin/bash
+
+filenameString=$1
+challengeString=$2
+cd ./certbot
+echo ${challengeString} > ./.well-known/acme-challenge/${filenameString}
+node server.js

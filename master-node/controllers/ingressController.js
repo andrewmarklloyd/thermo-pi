@@ -6,11 +6,11 @@ function IngressController() {
 
 }
 
-function createPortMapping(client, host) {
+function createPortMapping(client, host, port) {
   return new Promise((resolve, reject) => {
-		const private = !host ? 443 : {host, port: 443}
+		const private = !host ? port : {host, port: port}
     client.portMapping({
-      public: 443,
+      public: port,
 			private,
       description: 'Thermo-pi master node',
       ttl: 0
@@ -53,10 +53,10 @@ function removeAllMappings(client) {
   })
 }
 
-IngressController.prototype.openIngress = function(host) {
+IngressController.prototype.openIngress = function(host, port) {
 	client = natUpnp.createClient();
 	return removeAllMappings(client).then(result => {
-	  return createPortMapping(client, host);
+	  return createPortMapping(client, host, port);
 	})
 	.then(d => {
 		client.close();

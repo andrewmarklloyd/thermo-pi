@@ -3,7 +3,7 @@ const config = require('./config/config');
 function setupIngress(callback) {
 	const IngressController = require('./controllers/ingressController');
 	const ingressController = new IngressController();
-	ingressController.openIngress().then(() => {
+	ingressController.openIngress(null, 443).then(() => {
 		console.log('Ingress OPENED for device')
 		callback();
 	})
