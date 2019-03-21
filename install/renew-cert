@@ -5,3 +5,6 @@ challengeString=$2
 cd ./certbot
 echo ${challengeString} > ./.well-known/acme-challenge/${filenameString}
 node server.js
+
+
+# copy cert to other nodes
