@@ -38,14 +38,6 @@ app.post('/control', function(req, res) {
   }
 });
 
-app.post('/challenge', function(req, res) {
-  if (req.body.code === config.challengeToken) {
-    res.status(200).json({result: 'success'})
-  } else {
-    res.status(500).json({result: 'fail'})
-  }
-})
-
 // the master node is down, accept the rank
 app.post('/election', function(req, res) {
   electionCandidates[req.body.rank] = req.body.hostname;

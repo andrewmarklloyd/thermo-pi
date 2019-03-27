@@ -12,7 +12,6 @@ const envVarsSchema = Joi.object({
   GOOGLE_CLIENT_SECRET: Joi.string().required(),
   GOOGLE_SHEET_ID: Joi.string().required(),
   AUTHORIZED_USERS: Joi.string().required(),
-  CHALLENGE_TOKEN: Joi.string().required()
 }).unknown()
   .required();
 

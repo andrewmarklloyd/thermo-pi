@@ -13,7 +13,6 @@ const envVarsSchema = Joi.object({
   GOOGLE_CLIENT_SECRET: Joi.string().required(),
   GOOGLE_SHEET_ID: Joi.string().required(),
   AUTHORIZED_USERS: Joi.string().required(),
-  CHALLENGE_TOKEN: Joi.string().required()
 }).unknown()
   .required();
 
@@ -36,7 +35,6 @@ const config = {
     sheetId: process.env.GOOGLE_SHEET_ID
   },
   authorizedUsers: process.env.AUTHORIZED_USERS.split(' '),
-  challengeToken: process.env.CHALLENGE_TOKEN
 };
 
 module.exports = config;

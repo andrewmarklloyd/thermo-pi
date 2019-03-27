@@ -91,6 +91,7 @@ app.get('/login', function (req, res) {
 	res.sendFile(`${__dirname}/web/login.html`);
 });
 
+// use a hook here for workers to add themselves?
 ['thermo', 'sprinkler'].forEach(worker => {
   app.get(`/${worker}`, requireLogin, function (req, res) {
     res.sendFile(`${__dirname}/web/${worker}.html`);
@@ -104,16 +105,6 @@ app.get('/login', function (req, res) {
 app.get('/login.js', function(req, res) {
   res.sendFile(`${__dirname}/web/login.js`);
 });
-
-app.post('/challenge', function(req, res) {
-	var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-	console.log('challenge from worker node:', ip)
-  if (req.body.code === config.challengeToken) {
-    res.status(200).json({result: 'success'})
-  } else {
-    res.status(500).json({result: 'fail'})
-  }
-})
 
 app.post('/temp', function (req, res) {
 	if (roomTempListener === null) {
