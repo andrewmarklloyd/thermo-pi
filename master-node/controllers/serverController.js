@@ -59,7 +59,7 @@ app.use(cookieParser());
 
 function requireLogin(req, res, next) {
 	if (req.cookies.user === undefined) {
-    res.redirect('/login');
+    res.redirect('/login?refer=' + req.originalUrl.replace('/', ''));
   } else {
 		next();
 	}
@@ -91,8 +91,8 @@ app.get('/login', function (req, res) {
 	res.sendFile(`${__dirname}/web/login.html`);
 });
 
-app.get('/', requireLogin, function (req, res) {
-	res.sendFile(`${__dirname}/web/index.html`);
+app.get('/thermo', requireLogin, function (req, res) {
+	res.sendFile(`${__dirname}/web/thermo.html`);
 });
 
 app.get('/config.js', requireLogin, function(req, res) {

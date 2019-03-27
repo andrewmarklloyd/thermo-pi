@@ -7,7 +7,8 @@ function onSignIn(googleUser) {
     contentType: 'application/json',
     data: JSON.stringify({id_token}),
     success: function (data) {
-      window.location.href = '/';
+      var urlParams = new URLSearchParams(location.search);
+      window.location.href = '/' + urlParams.get('refer');
     },
     error: function (XMLHttpRequest, textStatus, errorThrown) {
       console.log(errorThrown);
