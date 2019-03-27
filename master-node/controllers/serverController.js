@@ -95,8 +95,16 @@ app.get('/thermo', requireLogin, function (req, res) {
 	res.sendFile(`${__dirname}/web/thermo.html`);
 });
 
-app.get('/config.js', requireLogin, function(req, res) {
-  res.sendFile(`${__dirname}/web/config.js`);
+app.get('/thermo.js', requireLogin, function(req, res) {
+  res.sendFile(`${__dirname}/web/thermo.js`);
+});
+
+app.get('/sprinkler', requireLogin, function (req, res) {
+	res.sendFile(`${__dirname}/web/sprinkler.html`);
+});
+
+app.get('/sprinkler.js', requireLogin, function(req, res) {
+  res.sendFile(`${__dirname}/web/sprinkler.js`);
 });
 
 app.get('/login.js', function(req, res) {
