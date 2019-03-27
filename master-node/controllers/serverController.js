@@ -91,21 +91,15 @@ app.get('/login', function (req, res) {
 	res.sendFile(`${__dirname}/web/login.html`);
 });
 
-app.get('/thermo', requireLogin, function (req, res) {
-	res.sendFile(`${__dirname}/web/thermo.html`);
-});
+['thermo', 'sprinkler'].forEach(worker => {
+  app.get(`/${worker}`, requireLogin, function (req, res) {
+    res.sendFile(`${__dirname}/web/${worker}.html`);
+  });
 
-app.get('/thermo.js', requireLogin, function(req, res) {
-  res.sendFile(`${__dirname}/web/thermo.js`);
-});
-
-app.get('/sprinkler', requireLogin, function (req, res) {
-	res.sendFile(`${__dirname}/web/sprinkler.html`);
-});
-
-app.get('/sprinkler.js', requireLogin, function(req, res) {
-  res.sendFile(`${__dirname}/web/sprinkler.js`);
-});
+  app.get(`/${worker}.js`, requireLogin, function(req, res) {
+    res.sendFile(`${__dirname}/web/${worker}.js`);
+  });
+})
 
 app.get('/login.js', function(req, res) {
   res.sendFile(`${__dirname}/web/login.js`);
