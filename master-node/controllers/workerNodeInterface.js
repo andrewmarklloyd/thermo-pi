@@ -35,34 +35,6 @@ WorkerNodeInterface.prototype.setRoomTemp = function(data, callback) {
   });
 }
 
-WorkerNodeInterface.prototype.setHeaterStatus = function(data, callback) {
-	const address = roomAddressMap[data.room];
-	if (address === undefined) {
-		return callback(`${data.room} room node hasn't checked in yet.`)
-	}
-	const options = {
-    headers: {
-    	'content-type': 'application/json'
-    },
-    url: `http://${address}:8888/control`,
-    method: 'POST',
-    body: JSON.stringify({
-    	status: data.status
-    })
-	}
-	request(options, function(error, response, body) {
-    if (error) {
-      callback(error)
-    } else {
-      if (response.statusCode === 200) {
-        callback();
-      } else {
-        callback(body);
-      }
-    }
-  });
-}
-
 WorkerNodeInterface.prototype.setRoomAddress = function(data) {
 	console.log('Setting worker room address', data)
 	roomAddressMap[data.roomFunction] = data.address;
