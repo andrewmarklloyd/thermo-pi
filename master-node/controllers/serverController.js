@@ -13,7 +13,7 @@ server.listen(5555);
 const fs = require('fs');
 const registerListeners = [];
 const disconnectListeners = [];
-var roomTempListener = null;
+var workerActionListener = null;
 const TwoWayMap = require('../helpers/TwoWayMap');
 var socketClientsTwoWayMap = new TwoWayMap();
 
@@ -86,7 +86,7 @@ function userAuthorized(req, res, next) {
 }
 
 function tokenCheck(req, res, next) {
-  if (roomTempListener === null) {
+  if (workerActionListener === null) {
     return res.status(500).json({error: 'Master node not initialized yet, please try again.'})
   }
   if (!req.body || !req.body.id_token) {
@@ -172,7 +172,7 @@ clientUpdatesNamespace.on('connect', function (socket) {
 
 
 
-function ServerController(workerType) {
+function ServerController(workerType, payloadSchema) {
   app.get(`/${workerType}`, requireLogin, function (req, res) {
     res.sendFile(`${__dirname}/web/${workerType}.html`);
   });
@@ -183,13 +183,17 @@ function ServerController(workerType) {
 
   app.post(`/${workerType}`, tokenCheck, userAuthorized, function (req, res) {
     console.log('request', req.userId)
-    if (!req.body || !req.body.room || !req.body.direction) {
-      return res.status(500).json({error: 'Send "room" and temperature "direction" in json body'})
+    if (!req.body) {
+      return res.status(500).json({error: 'Send json body payload'})
     }
-    const room = req.body.room;
-    const direction = req.body.direction;
+    for (let key of payloadSchema) {
+      if (!req.body[key]) {
+        return res.status(500).json({error: `Send ${key} in json body payload`})
+        break;
+      }
+    }
 
-    roomTempListener({room, direction}, (error, data) => {
+    workerActionListener(req.body, (error, data) => {
       if (error) {
         res.status(500).json({error: `An error occurred: ${error}`})
       } else {
@@ -207,8 +211,8 @@ ServerController.prototype.addWorkerDisconnectListener = function(listener) {
 	disconnectListeners.push(listener);
 }
 
-ServerController.prototype.setRoomTempListener = function(listener) {
-	roomTempListener = listener;
+ServerController.prototype.setworkerActionListener = function(listener) {
+	workerActionListener = listener;
 }
 
 

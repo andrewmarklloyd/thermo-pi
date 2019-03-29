@@ -26,7 +26,10 @@ function initialize() {
 	const workerNodeInterface = new WorkerNodeInterface();
 
 	const ServerController = require('./controllers/serverController.js');
-	const serverController = new ServerController('thermo');
+	const serverController = new ServerController('thermo', [
+		'room',
+		'direction'
+	]);
 
 	serverController.addWorkerRegisterListener((data) => {
 		workerNodeInterface.setRoomAddress(data)
@@ -36,8 +39,8 @@ function initialize() {
 		workerNodeInterface.removeRoomAddress(data)
 	});
 
-	serverController.setRoomTempListener((roomTemp, callback) => {
-		workerNodeInterface.setRoomTemp(roomTemp, callback);
+	serverController.setworkerActionListener((body, callback) => {
+		workerNodeInterface.setRoomTemp(body, callback);
 	})
 }
 
