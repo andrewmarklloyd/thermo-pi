@@ -39,7 +39,7 @@ $(function () {
   function changeDesiredTemperature(room, direction) {
     $.post({
       type: "POST",
-      url: `/temp`,
+      url: `/thermo`,
       contentType: 'application/json',
       data: JSON.stringify({room, direction, id_token}),
       success: function (data) {

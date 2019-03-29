@@ -23,7 +23,7 @@ const workerUpdatesNamespace = io.of('/updates.worker')
 
 require('socketio-auth')(clientUpdatesNamespace, {
   authenticate: function (socket, data, callback) {
-		verify(data.id_token).then(response => {
+		verifyToken(data.id_token).then(response => {
 			const authorizedUsers = config.authorizedUsers;
 			var userOk;
 			authorizedUsers.forEach(user => {
@@ -44,7 +44,7 @@ require('socketio-auth')(clientUpdatesNamespace, {
   }
 });
 
-async function verify(token) {
+async function verifyToken(token) {
 	const ticket = await client.verifyIdToken({
     idToken: token,
     audience: config.google.client.id,
@@ -65,85 +65,52 @@ function requireLogin(req, res, next) {
 	}
 };
 
-app.post('/login', function (req, res) {
-	verify(req.body.id_token).then(response => {
+function userAuthorized(req, res, next) {
+  verifyToken(req.body.id_token).then(userId => {
 		const authorizedUsers = config.authorizedUsers;
 		var userOk;
 		authorizedUsers.forEach(user => {
-			if (user === response) {
+			if (user === userId) {
 				userOk = true;
 				return;
 			}
 		})
-		if (userOk) {
-      res.cookie('user', response, { maxAge: 900000, httpOnly: true });
-			res.status(200).json({result: 'success'});
-		} else {
-			res.status(500).json({result: 'error'})
-		}
+    if (userOk) {
+      req.userId = userId;
+    }
+		next();
 	}).catch(err => {
 		console.log(err)
 		res.status(500).json({result: 'error'})
 	})
+}
+
+function tokenCheck(req, res, next) {
+  if (roomTempListener === null) {
+    return res.status(500).json({error: 'Master node not initialized yet, please try again.'})
+  }
+  if (!req.body || !req.body.id_token) {
+    return res.status(401).json({error: 'Not authorized.'})
+  }
+  next();
+}
+
+app.post('/login', tokenCheck, userAuthorized, function (req, res) {
+  if (req.userId) {
+    console.log('user logged in', req.userId)
+    res.cookie('user', req.userId, { maxAge: 900000, httpOnly: true });
+    res.status(200).json({result: 'success'});
+  } else {
+    res.status(500).json({result: 'error'})
+  }
 });
 
 app.get('/login', function (req, res) {
 	res.sendFile(`${__dirname}/web/login.html`);
 });
 
-// use a hook here for workers to add themselves?
-['thermo', 'sprinkler'].forEach(worker => {
-  app.get(`/${worker}`, requireLogin, function (req, res) {
-    res.sendFile(`${__dirname}/web/${worker}.html`);
-  });
-
-  app.get(`/${worker}.js`, requireLogin, function(req, res) {
-    res.sendFile(`${__dirname}/web/${worker}.js`);
-  });
-})
-
 app.get('/login.js', function(req, res) {
   res.sendFile(`${__dirname}/web/login.js`);
-});
-
-app.post('/temp', function (req, res) {
-	if (roomTempListener === null) {
-		return res.status(500).json({error: 'Master node not initialized yet, please try again.'})
-	}
-	if (!req.body || !req.body.id_token) {
-		return res.status(401).json({error: 'Not authorized.'})
-	}
-	verify(req.body.id_token).then(response => {
-		const authorizedUsers = config.authorizedUsers;
-		var userOk;
-		authorizedUsers.forEach(user => {
-			if (user === response) {
-				userOk = true;
-				return;
-			}
-		})
-		if (!userOk) {
-      return new Error()
-		} else {
-			if (!req.body || !req.body.room || !req.body.direction) {
-				return res.status(500).json({error: 'Send "room" and temperature "direction" in json body'})
-			}
-			const room = req.body.room;
-			const direction = req.body.direction;
-
-			roomTempListener({room, direction}, (error, data) => {
-				if (error) {
-					res.status(500).json({error: `An error occurred: ${error}`})
-				} else {
-					res.status(200).send(data)
-				}
-			})
-		}
-	}).catch(err => {
-		// console.log(err)
-		res.status(401).json({error: 'Not authorized'})
-	})
-
 });
 
 leadershipNamespace.on('connect', function (socket) {
@@ -203,8 +170,33 @@ clientUpdatesNamespace.on('connect', function (socket) {
 	})
 })
 
-function ServerController() {
 
+
+function ServerController(workerType) {
+  app.get(`/${workerType}`, requireLogin, function (req, res) {
+    res.sendFile(`${__dirname}/web/${workerType}.html`);
+  });
+
+  app.get(`/${workerType}.js`, requireLogin, function(req, res) {
+    res.sendFile(`${__dirname}/web/${workerType}.js`);
+  });
+
+  app.post(`/${workerType}`, tokenCheck, userAuthorized, function (req, res) {
+    console.log('request', req.userId)
+    if (!req.body || !req.body.room || !req.body.direction) {
+      return res.status(500).json({error: 'Send "room" and temperature "direction" in json body'})
+    }
+    const room = req.body.room;
+    const direction = req.body.direction;
+
+    roomTempListener({room, direction}, (error, data) => {
+      if (error) {
+        res.status(500).json({error: `An error occurred: ${error}`})
+      } else {
+        res.status(200).send(data)
+      }
+    })
+  });
 }
 
 ServerController.prototype.addWorkerRegisterListener = function(listener) {

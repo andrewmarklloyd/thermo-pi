@@ -26,7 +26,7 @@ function initialize() {
 	const workerNodeInterface = new WorkerNodeInterface();
 
 	const ServerController = require('./controllers/serverController.js');
-	const serverController = new ServerController();
+	const serverController = new ServerController('thermo');
 
 	serverController.addWorkerRegisterListener((data) => {
 		workerNodeInterface.setRoomAddress(data)
