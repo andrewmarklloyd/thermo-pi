@@ -128,7 +128,7 @@ function leaderElection() {
 		const promises = [];
 		workerNodesListener(Array.from(nodes));
 		nodes.forEach(node => {
-			promises.push(sendRank(rank, node.address, localIp));
+			promises.push(sendRank(rank, node, localIp));
 		})
 		Promise.all(promises)
 		.then(workerAddresses => {
@@ -143,7 +143,7 @@ function leaderElection() {
 function getAllWorkerNodesSSDP() {
 	const workerNodes = new Set();
 	ssdpClient.on('response', function (headers, statusCode, rinfo) {
-		workerNodes.add({address: rinfo.address});
+		workerNodes.add(rinfo.address);
 	});
 	ssdpClient.search(WORKER_SERVICE_URN);
 
