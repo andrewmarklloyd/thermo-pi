@@ -21,6 +21,7 @@ app.get('/config.js', function(req, res) {
 });
 
 app.post('/', function(req, res) {
+  console.log(req.body)
   if (!req.body.room) {
     return res.status(500).json({error: 'please send room payload'})
   }

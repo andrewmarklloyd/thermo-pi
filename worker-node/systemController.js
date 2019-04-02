@@ -1,5 +1,6 @@
 const config = require('./config/config');
 const colors = require('colors');
+const workerSchemas = require('./models/workerSchemas')
 var restServer;
 
 if (process.argv[2] === '--initialize') {
@@ -27,10 +28,6 @@ function runApplication() {
 function startMasterProcess() {
   console.log(colors.yellow('Starting master node process'));
   const MasterSystemController = require('../master-node/systemController');
-  var workerType = 'thermo'
-  var payloadSchema = [
-    'room',
-    'direction'
-  ]
-  new MasterSystemController(workerType, payloadSchema);
+  var workerType = 'thermo';
+  const masterSystemController = new MasterSystemController(workerType, workerSchemas[workerType]);
 }

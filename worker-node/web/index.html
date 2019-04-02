@@ -1,7 +1,7 @@
 <html>
 
 <head>
-  <title>Thermo-Pi</title>
+  <title>Worker-Pi</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -15,9 +15,9 @@
 
       <div class="col-xl-8 offset-xl-2 py-5">
 
-        <h1>Thermo-Pi</h1>
+        <h1>Worker-Pi</h1>
 
-        <p class="lead">Use this form to configure your Thermo-Pi.</p>
+        <p class="lead">Use this form to configure your worker-pi.</p>
 
         <form id="config-form" method="post" role="form">
 
@@ -34,8 +34,14 @@
               </div> -->
               <div class="col-md-6">
                 <div class="form-group">
-                  <label for="form_config">Specify room *</label>
-                  <select id="form_config" name="room" class="form-control" required="required" data-error="Please specify the Thermo-Pi room.">
+                  <label for="form_config1">Specify worker type *</label>
+                  <select id="form_config1" name="workerType" class="form-control" required="required" data-error="Please specify the Worker-Pi's type.">
+                    <option value=""></option>
+                    <option value="sprinkler">Sprinkler</option>
+                    <option value="thermo">Thermo</option>
+                  </select>
+                  <label for="form_config">Specify location *</label>
+                  <select id="form_config" name="room" class="form-control" required="required" data-error="Please specify the Worker-Pi-Pi location.">
                     <option value=""></option>
                     <option value="laundry">Laundry Room</option>
                     <option value="kitchen">Kitchen</option>
