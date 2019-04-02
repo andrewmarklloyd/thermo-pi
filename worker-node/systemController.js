@@ -26,7 +26,11 @@ function runApplication() {
 
 function startMasterProcess() {
   console.log(colors.yellow('Starting master node process'));
-  var command;
-  const masterSystemController = require('../master-node/systemController');
-  console.log(masterSystemController)
+  const MasterSystemController = require('../master-node/systemController');
+  var workerType = 'thermo'
+  var payloadSchema = [
+    'room',
+    'direction'
+  ]
+  new MasterSystemController(workerType, payloadSchema);
 }

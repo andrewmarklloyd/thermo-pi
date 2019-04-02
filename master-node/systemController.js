@@ -14,7 +14,7 @@ function setupIngress(callback) {
 	})
 }
 
-function initialize() {
+function initialize(workerType, payloadSchema) {
 	const nodeSSDP = require('node-ssdp');
 	const SSDPServer = nodeSSDP.Server;
 	const masterssdpServer = new SSDPServer();
@@ -26,10 +26,7 @@ function initialize() {
 	const workerNodeInterface = new WorkerNodeInterface();
 
 	const ServerController = require('./controllers/serverController.js');
-	const serverController = new ServerController('thermo', [
-		'room',
-		'direction'
-	]);
+	const serverController = new ServerController(workerType, payloadSchema);
 
 	serverController.addWorkerRegisterListener((data) => {
 		workerNodeInterface.setRoomAddress(data)
@@ -44,10 +41,15 @@ function initialize() {
 	})
 }
 
-if (config.env === 'production') {
-	setupIngress(() => {
-		initialize();
-	});
-} else {
-	initialize();
+function SystemController(workerType, payloadSchema) {
+	if (config.env === 'production') {
+		setupIngress(() => {
+			initialize(workerType, payloadSchema);
+		});
+	} else {
+		initialize(workerType, payloadSchema);
+	}
 }
+
+module.exports = SystemController
+
